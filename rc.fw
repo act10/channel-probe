@@ -1,0 +1,40 @@
+
+${fwcmd} -f flush
+
+
+
+# Return divert
+${fwcmd} add 64999 fwd 2.2.2.1 ip from 2.2.2.2 to any
+
+${fwcmd} add 65000 divert natd ip from any to any in recv ${ch1}
+${fwcmd} add 65001 divert 8669 ip from any to 2.2.2.2
+${fwcmd} add 65002 divert natd ip from any to 1.1.1.2 in recv ${ch1}
+
+
+## Users
+## users to channel 1
+${fwcmd} table 33 flush
+        cat /etc/ip1.list | while read ip; do
+        ${fwcmd} table 33 add $ip
+done
+
+${fwcmd} table 22 flush
+        cat /etc/ip2.list | while read ip; do
+        ${fwcmd} table 22 add $ip
+done
+
+${fwcmd} add 100 count ip from any to any via ${ch1} #
+${fwcmd} add 100 count ip from any to any via ${ch2} #
+
+#to chanel 2
+${fwcmd} add 20011 count ip from table\(22\) to any #
+${fwcmd} add 20012 count ip from any to table\(22\) #
+${fwcmd} add 20013 divert 8669 ip from table\(22\) to any
+
+#to channel 1
+${fwcmd} add 30011 count ip from table\(33\) to any #
+${fwcmd} add 30012 count ip from any to table\(33\) #
+${fwcmd} add 30013 divert natd ip from table\(33\) to any
+
+echo "loaded"
+

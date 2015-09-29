@@ -1,0 +1,26 @@
+fwcmd="/sbin/ipfw -q "
+
+/sbin/route delete -net default
+/sbin/route add -net default ${ip_gw_1}
+
+
+# Return divert
+${fwcmd} delete 64999
+${fwcmd} add 64999 fwd ${ip_gw_2} ip from ${ip_2} to any
+
+${fwcmd} delete 65000
+${fwcmd} add 65000 divert natd ip from any to any in recv ${ext_1}
+${fwcmd} delete 65001
+${fwcmd} add 65001 divert 8669 ip from any to ${ip_2} 
+${fwcmd} delete 65002
+${fwcmd} add 65002 divert natd ip from any to ${ip_1} in recv ${ext_1}
+
+#to chanel 2
+${fwcmd} delete 20013
+${fwcmd} add 20013 divert 8669 ip from table\(22\) to any
+
+#to channel 1
+${fwcmd} delete 30013
+${fwcmd} add 30013 divert natd ip from table\(33\) to any
+
+echo "firewall configuration 1 loaded"
