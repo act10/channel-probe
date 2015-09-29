@@ -9,9 +9,9 @@ ${fwcmd} delete 65001
 ${fwcmd} add 65001 divert natd ip from any to ${ip_1}
 
 ${fwcmd} delete 65000
-${fwcmd} add 65000 divert 8669 ip from any to any in recv ${ext_2}
+${fwcmd} add 65000 divert 8669 ip from any to any in recv ${ch_2}
 ${fwcmd} delete 65002
-${fwcmd} add 65002 divert 8669 ip from any to ${ip_2} in recv ${ext_2}
+${fwcmd} add 65002 divert 8669 ip from any to ${ip_2} in recv ${ch_2}
 
 #to channel 2
 ${fwcmd} delete 20013
